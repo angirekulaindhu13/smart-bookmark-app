@@ -1,26 +1,110 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --bg-main: #EAE3E3;
+  --accent: #A35D4E;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-main);
+  font-family: 'Inter', sans-serif;
+}
+
+/* CARD STYLE */
+.card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.06);
+}
+
+/* TITLE */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* INPUT */
+.input-field {
+  width: 50%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.9rem;
+  border: 3px solid #e5e7eb;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(163,93,78,0.15);
+}
+
+/* PRIMARY BUTTON */
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  padding: 0.9rem 1.8rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: 0.2s;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+}
+
+/* BROWN LOGOUT BUTTON */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  background: var(--accent);
+  color: white;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  opacity: 0.85;
+}
+
+/* BOOKMARK ITEM */
+.bookmark-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  border: 5px solid #f3f4f6;
+  transition: 0.2s;
+}
+
+.bookmark-item:hover {
+  background-color: #fafafa;
+}
+
+/* ICON */
+.icon-box {
+  background: #f9fafb;
+  padding: 0.6rem;
+  border-radius: 0.7rem;
+  color: var(--accent);
+}
+
+/* DELETE */
+.delete-btn {
+  color: #d1d5db;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  color: red;
 }
