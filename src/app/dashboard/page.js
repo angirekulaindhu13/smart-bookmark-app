@@ -17,25 +17,29 @@ export default function Dashboard() {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/')
+      const { data } = await supabase.auth.getSession()
+
+      if (!data.session) {
+        router.replace('/')
         return
       }
 
-      setUser(user)
+      const currentUser = data.session.user
+      setUser(currentUser)
 
-      const { data } = await supabase
+      const { data: bookmarksData } = await supabase
         .from('bookmarks')
         .select('*')
+        .eq('user_id', currentUser.id)   // 🔥 important
         .order('created_at', { ascending: false })
 
-      setBookmarks(data || [])
+      setBookmarks(bookmarksData || [])
       setLoading(false)
     }
 
     init()
   }, [router])
+
 
   const addBookmark = async () => {
     if (!title.trim() || !url.trim())
