@@ -27,19 +27,21 @@ export default function Dashboard() {
       const currentUser = data.session.user
       setUser(currentUser)
 
-      const { data: bookmarksData } = await supabase
+      const { data: bookmarksData, error } = await supabase
         .from('bookmarks')
         .select('*')
-        .eq('user_id', currentUser.id)   // 🔥 important
+        .eq('user_id', currentUser.id) // 🔥 VERY IMPORTANT
         .order('created_at', { ascending: false })
 
-      setBookmarks(bookmarksData || [])
+      if (!error) {
+        setBookmarks(bookmarksData || [])
+      }
+
       setLoading(false)
     }
 
     init()
   }, [router])
-
 
   const addBookmark = async () => {
     if (!title.trim() || !url.trim())
@@ -52,7 +54,7 @@ export default function Dashboard() {
       .insert([{ title, url: finalUrl, user_id: user.id }])
       .select()
 
-    if (!error) {
+    if (!error && data) {
       setBookmarks([data[0], ...bookmarks])
       setTitle('')
       setUrl('')
@@ -65,6 +67,7 @@ export default function Dashboard() {
       .from('bookmarks')
       .delete()
       .eq('id', id)
+      .eq('user_id', user.id) // 🔥 extra safety
 
     if (!error) {
       setBookmarks(bookmarks.filter(b => b.id !== id))
@@ -72,19 +75,18 @@ export default function Dashboard() {
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-gray-400">
         Loading...
       </div>
     )
+  }
 
   return (
     <div className="min-h-screen p-6 md:p-12">
-      {/* Added vertical spacing using space-y-16 */}
       <div className="max-w-4xl mx-auto space-y-16">
 
-        {/* HEADER */}
         <header className="flex justify-between items-center">
           <div>
             <h1 className="text-xl font-bold text-gray-800">
@@ -95,11 +97,10 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Brown Logout Button */}
           <button
-            onClick={() => {
-              supabase.auth.signOut()
-              router.push('/')
+            onClick={async () => {
+              await supabase.auth.signOut()
+              router.replace('/')
             }}
             className="logout-btn"
           >
@@ -107,7 +108,6 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* ADD BOOKMARK CARD */}
         <section className="card">
           <h2 className="card-title">Add New Bookmark</h2>
 
@@ -129,15 +129,11 @@ export default function Dashboard() {
             />
           </div>
 
-          <button
-            onClick={addBookmark}
-            className="primary-btn mt-6"
-          >
+          <button onClick={addBookmark} className="primary-btn mt-6">
             <Plus size={18} /> Add Bookmark
           </button>
         </section>
 
-        {/* MY BOOKMARKS CARD */}
         <section className="card">
           <div className="mb-6">
             <h2 className="card-title">My Bookmarks</h2>
