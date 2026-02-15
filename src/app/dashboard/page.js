@@ -16,31 +16,41 @@ export default function Dashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    const init = async () => {
-      const { data } = await supabase.auth.getSession()
+    let isMounted = true
 
-      if (!data.session) {
+    const init = async () => {
+      // First check: wait a moment for Supabase to process auth from URL
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!isMounted) return
+
+      if (!session) {
         router.replace('/')
         return
       }
 
-      const currentUser = data.session.user
-      setUser(currentUser)
+      setUser(session.user)
 
       const { data: bookmarksData, error } = await supabase
         .from('bookmarks')
         .select('*')
-        .eq('user_id', currentUser.id) // 🔥 VERY IMPORTANT
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
 
-      if (!error) {
+      if (isMounted && !error) {
         setBookmarks(bookmarksData || [])
       }
 
-      setLoading(false)
+      if (isMounted) setLoading(false)
     }
 
     init()
+
+    return () => {
+      isMounted = false
+    }
   }, [router])
 
   const addBookmark = async () => {
